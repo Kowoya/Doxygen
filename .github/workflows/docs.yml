@@ -1,0 +1,86 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches: [ "feature/docs-ci" ]  # ТІЛЬКИ для feature гілки
+  pull_request:
+    branches: [ "feature/docs-ci" ]  # Для тестування PR
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  test-docs-generation:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen graphviz
+      
+      - name: Generate documentation (test)
+        run: |
+          echo "=== Testing documentation generation ==="
+          doxygen Doxyfile
+          echo "✅ Test passed! Documentation can be generated."
+      
+      - name: Check generated files
+        run: |
+          if [ -d "docs/html" ]; then
+            echo "✅ Documentation generated successfully"
+            echo "Generated files:"
+            ls docs/html/*.html | head -3
+          else
+            echo "❌ Documentation generation failed"
+            exit 1
+          fi
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/docs-ci'
+    environment:
+      name: github-pages-preview
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+          doxygen --version
+      
+      - name: Generate documentation
+        run: |
+          echo "=== Generating documentation ==="
+          doxygen Doxyfile
+          echo "✅ Documentation generated!"
+      
+      - name: Debug - Show generated files
+        run: |
+          echo "=== Generated files structure ==="
+          find docs/html -name "*.html" | head -5
+          echo "Total HTML files: $(find docs/html -name "*.html" | wc -l)"
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs/html'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
