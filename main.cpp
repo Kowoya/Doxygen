@@ -1,43 +1,43 @@
 /**
  * @class Character
- * @brief Базовий абстрактний клас, що представляє істоту з іменем та здоров'ям.
+ * @brief Base abstract class representing a creature with name and health.
  *
  * @details
- * Клас є батьківським для Player та Enemy.
- * Містить базові властивості та методи: ім'я, здоров'я, отримання шкоди.
+ * This class is parent for Player and Enemy.
+ * Contains basic properties and methods: name, health, taking damage.
  *
  * @example
- * // Character є абстрактним класом, тому його не можна створювати напряму.
- * // Але можна використовувати його як тип:
+ * // Character is an abstract class, so it cannot be instantiated directly.
+ * // But it can be used as a type:
  * Character* c = new Enemy("Orc", 80);
  * c->takeDamage(10);
  */
 class Character {
 protected:
-    string name;   ///< Ім'я персонажа
-    int health;    ///< Поточний рівень здоров'я
+    string name;   ///< Character's name
+    int health;    ///< Current health level
 
 public:
     /**
-     * @brief Конструктор базового персонажа.
+     * @brief Base character constructor.
      *
-     * @param n Ім'я персонажа.
-     * @param h Початковий рівень здоров'я.
+     * @param n Character's name.
+     * @param h Initial health level.
      */
     Character(string n, int h) : name(n), health(h) {}
 
     /**
-     * @brief Абстрактний метод атаки.
+     * @brief Abstract attack method.
      *
-     * @details Реалізується у похідних класах Player та Enemy.
+     * @details Implemented in derived classes Player and Enemy.
      */
     virtual void attack() = 0;
 
     /**
-     * @brief Зменшує здоров'я персонажа.
+     * @brief Reduces character's health.
      *
-     * @param amount Кількість завданої шкоди.
-     * @return Нічого не повертає.
+     * @param amount Amount of damage inflicted.
+     * @return Returns nothing.
      *
      * @example
      * character->takeDamage(15);
@@ -49,9 +49,9 @@ public:
     }
 
     /**
-     * @brief Повертає поточне здоров’я персонажа.
+     * @brief Returns current character's health.
      *
-     * @return Значення здоров’я.
+     * @return Health value.
      */
     int getHealth() const { return health; }
 };
@@ -59,30 +59,30 @@ public:
 
 /**
  * @class Player
- * @brief Клас гравця, що має досвід та додаткові здібності.
+ * @brief Player class with experience and additional abilities.
  *
  * @details
- * Похідний клас від Character.
- * Містить атаку, кастування заклять та відображення статусу.
+ * Derived class from Character.
+ * Contains attack, spell casting, and status display.
  */
 class Player : public Character {
 private:
-    int experience; ///< Досвід гравця
+    int experience; ///< Player's experience
 
 public:
     /**
-     * @brief Конструктор класу Player.
+     * @brief Player class constructor.
      *
-     * @param n Ім'я гравця.
-     * @param h Початкове здоров'я.
-     * @param xp Початковий досвід.
+     * @param n Player's name.
+     * @param h Initial health.
+     * @param xp Initial experience.
      */
     Player(string n, int h, int xp) : Character(n, h), experience(xp) {}
 
     /**
-     * @brief Виконує атаку гравця.
+     * @brief Executes player's attack.
      *
-     * @details Збільшує досвід на 10.
+     * @details Increases experience by 10.
      */
     void attack() override {
         cout << name << " attacks with a sword!" << endl;
@@ -90,14 +90,14 @@ public:
     }
 
     /**
-     * @brief Гравець кастує магічне закляття.
+     * @brief Player casts a magic spell.
      */
     void castSpell() {
         cout << name << " casts a protective spell!" << endl;
     }
 
     /**
-     * @brief Виводить інформацію про стан гравця.
+     * @brief Displays information about player's status.
      *
      * @example
      * Player p("Hero", 100, 0);
@@ -111,23 +111,23 @@ public:
 
 /**
  * @class Enemy
- * @brief Ворог, який може атакувати гравця.
+ * @brief Enemy that can attack the player.
  *
  * @details
- * Простий клас, що успадковує Character і реалізує метод attack().
+ * Simple class that inherits from Character and implements attack() method.
  */
 class Enemy : public Character {
 public:
     /**
-     * @brief Конструктор класу Enemy.
+     * @brief Enemy class constructor.
      *
-     * @param n Ім'я ворога.
-     * @param h Початковий рівень здоров'я.
+     * @param n Enemy's name.
+     * @param h Initial health level.
      */
     Enemy(string n, int h) : Character(n, h) {}
 
     /**
-     * @brief Виконує атаку ворога.
+     * @brief Executes enemy's attack.
      */
     void attack() override {
         cout << name << " strikes viciously!" << endl;
@@ -136,9 +136,9 @@ public:
 
 
 int main() {
-    Player p("Alex", 100, 5);
-    p.showStatus();
-    p.attack();
-    p.takeDamage(20);
-    p.castSpell();
+    Player p("Alex", 100, 5);  
+    p.showStatus();            
+    p.attack();                
+    p.takeDamage(20);          
+    p.castSpell();             
 }
